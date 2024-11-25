@@ -15,30 +15,46 @@ function Squares({ letters, handleClick }) {
 }
 
 export default function App() {
-  const lettersToUse = ["B", "U", "T", "T", "H", "O", "L", "E", "•"];
+  const letterArray = ["B", "U", "T", "T", "H", "O", "L", "E", "•"].reverse();
+  const [lettersLeftover, setLettersLeftover] = useState(letterArray);
   const [letters, setLetters] = useState(Array(9).fill(""));
-  const [letterCount, setLetterCount] = useState(0);
 
   const resetBoard = () => {
     setLetters(Array(9).fill(""));
-    setLetterCount(0);
+    setLettersLeftover(letterArray);
   };
 
   const handleClick = (index) => {
-    if (letters.every((item) => item !== "")) {
+    if (letters.every((letter) => letter !== "")) {
       resetBoard();
       return;
     }
 
-    setLetters((prevLetters) => {
-      const newLetters = [...prevLetters];
-      newLetters[index] = newLetters[index] ? "" : lettersToUse[letterCount];
-      return newLetters;
-    });
+    // if square is '', change to letters leftover; update everything
+    if (letters[index] === "") {
+      setLetters((prevLetters) => {
+        let newLetters = [...prevLetters];
+        newLetters[index] = lettersLeftover[lettersLeftover.length - 1];
+        console.log(newLetters);
+        return newLetters;
+      });
+      setLettersLeftover((prevLettersLeftover) => {
+        return prevLettersLeftover.slice(0, -1);
+      });
+    }
 
-    setLetterCount((prevLetterCount) =>
-      prevLetterCount >= lettersToUse.length - 1 ? 0 : prevLetterCount + 1
-    );
+    // if square has a letter in it, put that letter back in the leftover array and make it blank
+    if (letters[index] !== "") {
+      setLetters((prevLetters) => {
+        let newLetters = [...prevLetters];
+        newLetters[index] = "";
+        console.log(newLetters);
+        return newLetters;
+      });
+      setLettersLeftover((prevLettersLeftover) => {
+        return [...prevLettersLeftover, letters[index]];
+      });
+    }
   };
 
   return (
