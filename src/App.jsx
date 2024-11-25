@@ -8,42 +8,42 @@ function Square({ letter, onClick }) {
   );
 }
 
-function Squares({ letters, handleClick, setLetters, lettersToUse }) {
+function Squares({ letters, handleClick }) {
   return letters.map((letter, index) => (
-    <Square
-      key={index}
-      letter={letter}
-      onClick={() => handleClick(index, setLetters, lettersToUse)}
-    />
+    <Square key={index} letter={letter} onClick={() => handleClick(index)} />
   ));
 }
 
-function handleClick(index, setLetters, lettersToUse) {
-  console.log("clicked", index);
-  setLetters((prevLetters) => {
-    const newLetters = [...prevLetters];
-    // if (newLetters[index] === '•') {
-    // return newLetters
-    // }
-    newLetters[index] = newLetters[index] ? "" : lettersToUse[index];
-    return newLetters;
-  });
-}
-
 export default function App() {
-  const lettersToUse = ["B", "U", "T", "T", "•", "H", "O", "L", "E"];
+  const lettersToUse = ["B", "U", "T", "T", "H", "O", "L", "E", "•"];
   const [letters, setLetters] = useState(Array(9).fill(""));
+  const [letterCount, setLetterCount] = useState(0);
+
+  const resetBoard = () => {
+    setLetters(Array(9).fill(""));
+    setLetterCount(0);
+  };
+
+  const handleClick = (index) => {
+    if (letters.every((item) => item !== "")) {
+      resetBoard();
+      return;
+    }
+
+    setLetters((prevLetters) => {
+      const newLetters = [...prevLetters];
+      newLetters[index] = newLetters[index] ? "" : lettersToUse[letterCount];
+      return newLetters;
+    });
+
+    setLetterCount((prevLetterCount) =>
+      prevLetterCount >= lettersToUse.length - 1 ? 0 : prevLetterCount + 1
+    );
+  };
 
   return (
-    <>
-      <div className="square-div">
-        <Squares
-          letters={letters}
-          setLetters={setLetters}
-          lettersToUse={lettersToUse}
-          handleClick={handleClick}
-        />
-      </div>
-    </>
+    <div className="square-div">
+      <Squares letters={letters} handleClick={handleClick} />
+    </div>
   );
 }
